@@ -41,9 +41,9 @@ Retrieve the docker image:
 docker pull ghcr.io/caarmen/weather-slack-profile-photo:latest
 ```
 
-Run the docker image:
+Run the docker image. Change the host path to your photo if it's not `photo.png` in the root of the project:
 ```
-docker run --detach -v `pwd`/.env:/app/.env -v /path/to/photo.png:/app/photo.png ghcr.io/caarmen/weather-slack-profile-photo
+docker run --detach -v `pwd`/.env:/app/.env -v `pwd`/photo.png:/app/photo.png ghcr.io/caarmen/weather-slack-profile-photo
 ```
 
 
