@@ -6,10 +6,12 @@ Script which periodically:
 * and updates the user's profile photo in Slack with this new profile photo.
 """
 
+import dataclasses
 import io
 import logging
 from pathlib import Path
 from threading import Event, Timer
+from typing import Optional
 from pydantic import BaseSettings, DirectoryPath, FilePath, PositiveInt
 import requests
 from PIL import Image
@@ -21,15 +23,23 @@ class Settings(BaseSettings):
     slack_cookie_d: str
     slack_workspace: str
     location: str
-    profile_photo_path: FilePath
+    profile_photo_path: FilePath = Path(__file__).parent / "photo.png"
     resources_dir: DirectoryPath = Path(__file__).parent / "resources"
-    polling_interval: PositiveInt = 3600
+    polling_interval_s: PositiveInt = 3600
 
     class Config:
         env_file = ".env"
 
 
 settings = Settings()
+
+
+@dataclasses.dataclass
+class Cache:
+    last_weather_code: Optional[int] = None
+
+
+cache = Cache()
 
 
 def setup_logging():
@@ -108,20 +118,24 @@ def update_profile_photo_from_weather():
     """
     try:
         weather_code = get_current_weather_code()
-        background_image_file = get_background_image_file(weather_code)
-        profile_photo = create_profile_photo(background=background_image_file)
-        set_profile_photo(profile_photo)
-        logging.info(
-            f"updated profile photo based on weather_code {weather_code}"
-            + f" and background image {background_image_file}"
-        )
+        if cache.last_weather_code != weather_code:
+            cache.last_weather_code = weather_code
+            background_image_file = get_background_image_file(weather_code)
+            profile_photo = create_profile_photo(background=background_image_file)
+            set_profile_photo(profile_photo)
+            logging.info(
+                f"updated profile photo based on weather_code {weather_code}"
+                + f" and background image {background_image_file}"
+            )
+        else:
+            logging.info(f"No weather change since last time ({weather_code})")
     except Exception:
         logging.error("Error updating profile photo", exc_info=True)
     schedule_update_profile_photo()
 
 
 def schedule_update_profile_photo():
-    timer = Timer(settings.polling_interval, update_profile_photo_from_weather)
+    timer = Timer(settings.polling_interval_s, update_profile_photo_from_weather)
     timer.daemon = True
     timer.start()
 
