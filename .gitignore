@@ -1,0 +1,4 @@
+.env*
+.resources
+.vscode/settings.json
+photo.png

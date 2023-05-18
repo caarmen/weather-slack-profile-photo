@@ -1,0 +1,7 @@
+pillow==9.5.0
+python-dotenv==1.0.0
+pydantic==1.10.7
+requests==2.30.0
+
+black==23.3.0
+ruff==0.0.263
