@@ -43,7 +43,7 @@ docker pull ghcr.io/caarmen/weather-slack-profile-photo:latest
 
 Run the docker image:
 ```
-docker run --detach -v `pwd`/.env:/app/.env -v /path/to/photo.png/:/app/photo.png ghcr.io/caarmen/weather-slack-profile-photo
+docker run --detach -v `pwd`/.env:/app/.env -v /path/to/photo.png:/app/photo.png ghcr.io/caarmen/weather-slack-profile-photo
 ```
 
 
