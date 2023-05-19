@@ -9,4 +9,4 @@ RUN pip install -r requirements.txt
 COPY wspp wspp
 COPY resources resources
 
-CMD python wspp.main.py
+CMD python -m wspp.main
