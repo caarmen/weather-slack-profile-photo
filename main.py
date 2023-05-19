@@ -22,7 +22,8 @@ class Settings(BaseSettings):
     slack_token: str
     slack_cookie_d: str
     slack_workspace: str
-    location: str
+    latitude: float
+    longitude: float
     profile_photo_path: FilePath = Path(__file__).parent / "photo.png"
     resources_dir: DirectoryPath = Path(__file__).parent / "resources"
     polling_interval_s: PositiveInt = 3600
@@ -58,7 +59,7 @@ def get_current_weather_code() -> int:
         url="http://api.weatherstack.com/current",
         params={
             "access_key": settings.weatherstack_api_access_key,
-            "query": settings.location,
+            "query": f"{settings.latitude},{settings.longitude}",
         },
     )
     response_data: dict = response.json()
