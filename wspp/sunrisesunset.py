@@ -39,6 +39,11 @@ class SunriseSunset:
     @cached_property
     def seconds_until_next_sunrise(self):
         now = datetime.datetime.now(tz=datetime.timezone.utc)
+        # Ex: it's 2am now, and the sun will rise in 4 hours at 6am:
+        if self.sunrise > now:
+            return (self.sunrise - now).seconds
+        # Ex: the sun rose at 6am, and it's now 10am, and the sun will
+        # rise tomorrow at 6am
         tomorrow = now + datetime.timedelta(days=1)
         tomorrow_data = sun.sun(observer=self.location.observer, date=tomorrow.date())
         return (tomorrow_data["sunrise"] - now).seconds
