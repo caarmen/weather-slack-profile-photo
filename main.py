@@ -183,7 +183,7 @@ def update_profile_photo_from_weather():
 
 def schedule_update_profile_photo(delay_s: int):
     logging.info(f"Scheduling next poll in {delay_s} seconds")
-    timer = Timer(settings.polling_interval_s, update_profile_photo_from_weather)
+    timer = Timer(delay_s, update_profile_photo_from_weather)
     timer.daemon = True
     timer.start()
 
