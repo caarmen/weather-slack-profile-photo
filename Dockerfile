@@ -6,7 +6,7 @@ COPY requirements.txt requirements.txt
 
 RUN pip install -r requirements.txt
 
-COPY main.py main.py
+COPY wspp wspp
 COPY resources resources
 
-CMD python main.py
+CMD python wspp.main.py

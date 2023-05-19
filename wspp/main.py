@@ -27,8 +27,8 @@ class Settings(BaseSettings):
     slack_workspace: str
     latitude: float
     longitude: float
-    resources_dir: DirectoryPath = Path(__file__).parent / "resources"
-    profile_photos_dir: DirectoryPath = Path(__file__).parent / "profile_photos"
+    resources_dir: DirectoryPath = Path(__file__).parent.parent / "resources"
+    profile_photos_dir: DirectoryPath = Path(__file__).parent.parent / "profile_photos"
     polling_interval_s: PositiveInt = 7200
 
     class Config:

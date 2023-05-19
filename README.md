@@ -31,7 +31,7 @@ You need to provide:
 
 ### Locally
 * Setup a python environment
-* Run `python main.py`
+* Run `python wspp.main.py`
 
 ### With Docker
 
