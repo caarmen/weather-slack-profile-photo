@@ -1,3 +1,4 @@
 .env*
 .resources
 .vscode/
+__pycache__

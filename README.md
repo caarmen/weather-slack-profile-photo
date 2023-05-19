@@ -9,9 +9,9 @@ You need to provide:
 * Environment variables:
   - Copy the `.env.template` file to `.env`.
   - Edit the variables:
-    - `WEATHERSTACK_API_ACCESS_KEY`: the api key for your account on weatherstack.com.
-    - `SLACK_WORKSPACE`: the slack workspace where you want to change your profile photo
-    - `SLACK_TOKEN`, `SLACK_COOKIE_D`: see below.
+    - `WEATHERSTACK__API_ACCESS_KEY`: the api key for your account on weatherstack.com.
+    - `SLACK__WORKSPACE`: the slack workspace where you want to change your profile photo
+    - `SLACK__TOKEN`, `SLACK__COOKIE_D`: see below.
     - `LATITUDE`, `LONGITUDE`: the location for the weather conditions that will be used to fill in the background in your profile photo.
 
 ### Retrieving the slack token and cookie values
@@ -19,8 +19,8 @@ You need to provide:
 * Enable developer tools in the browser, and open the network tab.
 * Manually change your profile photo to any photo you want.
 * Inspect the request in the developer tools network tab on the `/api/users.setPhoto` endpoint.
-  - Copy the value of the `token` parameter into `SLACK_TOKEN` in your `.env` file.
-  - For the `SLACK_COOKIE_D` env var, look at the `cookie` header, and extract the value of the `d=` part of the cookie.
+  - Copy the value of the `token` parameter into `SLACK__TOKEN` in your `.env` file.
+  - For the `SLACK__COOKIE_D` env var, look at the `cookie` header, and extract the value of the `d=` part of the cookie.
 
 ### Optional parameters
 * `PROFILE_PHOTOS_DIR`: the directory containing your profile photos with the transparent background. It should contain a `photo.png` for daytime, and a `night_photo.png` for nighttime. The default location is in `profile_photos/` in the project.
@@ -31,7 +31,7 @@ You need to provide:
 
 ### Locally
 * Setup a python environment
-* Run `python main.py`
+* Run `python wspp.main.py`
 
 ### With Docker
 
