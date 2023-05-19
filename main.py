@@ -7,12 +7,15 @@ Script which periodically:
 """
 
 import dataclasses
+from functools import cached_property
 import io
 import logging
+import datetime
+from astral import LocationInfo, sun
 from pathlib import Path
 from threading import Event, Timer
-from typing import Optional
-from pydantic import BaseSettings, DirectoryPath, FilePath, PositiveInt
+from typing import Optional, Self
+from pydantic import BaseSettings, DirectoryPath, PositiveInt
 import requests
 from PIL import Image
 
@@ -22,10 +25,11 @@ class Settings(BaseSettings):
     slack_token: str
     slack_cookie_d: str
     slack_workspace: str
-    location: str
-    profile_photo_path: FilePath = Path(__file__).parent / "photo.png"
+    latitude: float
+    longitude: float
     resources_dir: DirectoryPath = Path(__file__).parent / "resources"
-    polling_interval_s: PositiveInt = 3600
+    profile_photos_dir: DirectoryPath = Path(__file__).parent / "profile_photos"
+    polling_interval_s: PositiveInt = 7200
 
     class Config:
         env_file = ".env"
@@ -49,16 +53,18 @@ def setup_logging():
     )
 
 
-def get_current_weather_code() -> int:
+def get_current_weather_code(is_day: bool) -> int:
     """
     :return: The weather_code for the current condition at the location defined
     in the environment variable.
     """
+    if not is_day:
+        return 999
     response = requests.get(
         url="http://api.weatherstack.com/current",
         params={
             "access_key": settings.weatherstack_api_access_key,
-            "query": settings.location,
+            "query": f"{settings.latitude},{settings.longitude}",
         },
     )
     response_data: dict = response.json()
@@ -74,13 +80,13 @@ def get_background_image_file(weather_code: int) -> Path:
     return next(settings.resources_dir.glob(f"{weather_code}*"))
 
 
-def create_profile_photo(background: Path) -> io.BytesIO:
+def create_profile_photo(background: Path, foreground: Path) -> io.BytesIO:
     """
     :return: the binary data of an image containing the given background image, with
     the photo provided in PROFILE_PHOTO_PATH on top.
     """
     background_image = Image.open(background)
-    foreground_image = Image.open(Path(settings.profile_photo_path)).convert("RGBA")
+    foreground_image = Image.open(foreground).convert("RGBA")
     new_image = Image.new(
         mode="RGB",
         size=background_image.size,
@@ -112,16 +118,57 @@ def set_profile_photo(image_data: io.BytesIO):
         raise Exception(f"Error updating photo: {response_data.get('error')}")
 
 
+@dataclasses.dataclass
+class SunriseSunset:
+    location: LocationInfo
+    sunrise: datetime.datetime
+    sunset: datetime.datetime
+
+    @classmethod
+    def create(cls) -> Self:
+        location = LocationInfo(
+            latitude=settings.latitude, longitude=settings.longitude
+        )
+        sun_data = sun.sun(observer=location.observer)
+        return cls(
+            location=location, sunrise=sun_data["sunrise"], sunset=sun_data["sunset"]
+        )
+
+    @cached_property
+    def is_day_now(self):
+        now = datetime.datetime.now(datetime.timezone.utc)
+        return self.sunrise < now < self.sunset
+
+    @cached_property
+    def seconds_until_next_sunrise(self):
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
+        tomorrow = now + datetime.timedelta(days=1)
+        tomorrow_data = sun.sun(observer=self.location.observer, date=tomorrow.date())
+        return tomorrow_data["sunrise"] - now
+
+
 def update_profile_photo_from_weather():
     """
     Update the profile photo on slack based on the current weather condition.
     """
+    delay_next_poll_s = settings.polling_interval_s
     try:
-        weather_code = get_current_weather_code()
+        sunrise_sunset = SunriseSunset.create()
+        weather_code = get_current_weather_code(sunrise_sunset.is_day_now)
         if cache.last_weather_code != weather_code:
             cache.last_weather_code = weather_code
+
+            if not sunrise_sunset.is_day_now:
+                delay_next_poll_s = sunrise_sunset.seconds_until_next_sunrise
+
             background_image_file = get_background_image_file(weather_code)
-            profile_photo = create_profile_photo(background=background_image_file)
+            foreground_image_file = Path(settings.profile_photos_dir) / (
+                "photo.png" if sunrise_sunset.is_day_now else "night_photo.png"
+            )
+            profile_photo = create_profile_photo(
+                background=background_image_file,
+                foreground=foreground_image_file,
+            )
             set_profile_photo(profile_photo)
             logging.info(
                 f"updated profile photo based on weather_code {weather_code}"
@@ -131,10 +178,11 @@ def update_profile_photo_from_weather():
             logging.info(f"No weather change since last time ({weather_code})")
     except Exception:
         logging.error("Error updating profile photo", exc_info=True)
-    schedule_update_profile_photo()
+    schedule_update_profile_photo(delay_next_poll_s)
 
 
-def schedule_update_profile_photo():
+def schedule_update_profile_photo(delay_s: int):
+    logging.info(f"Scheduling next poll in {delay_s} seconds")
     timer = Timer(settings.polling_interval_s, update_profile_photo_from_weather)
     timer.daemon = True
     timer.start()
