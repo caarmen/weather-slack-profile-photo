@@ -47,3 +47,15 @@ class SunriseSunset:
         tomorrow = now + datetime.timedelta(days=1)
         tomorrow_data = sun.sun(observer=self.location.observer, date=tomorrow.date())
         return (tomorrow_data["sunrise"] - now).seconds
+
+    @cached_property
+    def seconds_until_next_sunset(self):
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
+        # Ex: it's noon now, and the sun will set in 6 hours at 6pm:
+        if self.sunset > now:
+            return (self.sunset - now).seconds
+        # Ex: the sun set at 6pm, and it's now 10pm, and the sun will
+        # set tomorrow at 6pm
+        tomorrow = now + datetime.timedelta(days=1)
+        tomorrow_data = sun.sun(observer=self.location.observer, date=tomorrow.date())
+        return (tomorrow_data["sunset"] - now).seconds
