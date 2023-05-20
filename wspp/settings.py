@@ -18,7 +18,7 @@ class WsppSettings(BaseModel):
 class Settings(BaseSettings):
     wspp: WsppSettings
     weatherstack: weatherstack.WeatherstackSettings
-    slack: slack.SlackSettings
+    slack: list[slack.SlackSettings]
 
     @classmethod
     def read(cls):

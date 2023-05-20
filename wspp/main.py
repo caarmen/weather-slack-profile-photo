@@ -50,18 +50,22 @@ def update_profile_photo_from_weather():
             cache.last_weather_code = weather_code
 
             background_image_file = image.get_image_file(prefix=str(weather_code))
-            foreground_image_file = Path(settings.wspp.profile_photos_dir) / (
-                "photo.png" if sunrise_sunset.is_day_now else "night_photo.png"
-            )
-            profile_photo = image.create_profile_photo(
-                background=background_image_file,
-                foreground=foreground_image_file,
-            )
-            slack.set_profile_photo(settings.slack, profile_photo)
-            logging.info(
-                f"updated profile photo based on weather_code {weather_code}"
-                + f" and background image {background_image_file}"
-            )
+
+            for slack_settings in settings.slack:
+                foreground_image_file = Path(settings.wspp.profile_photos_dir) / (
+                    f"{slack_settings.name}_day.png"
+                    if sunrise_sunset.is_day_now
+                    else f"{slack_settings.name}_night.png"
+                )
+                profile_photo = image.create_profile_photo(
+                    background=background_image_file,
+                    foreground=foreground_image_file,
+                )
+                slack.set_profile_photo(slack_settings, profile_photo)
+                logging.info(
+                    f"updated profile photo based on weather_code {weather_code}"
+                    + f" and background image {background_image_file}"
+                )
         else:
             logging.info(f"No weather change since last time ({weather_code})")
     except Exception:
