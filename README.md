@@ -3,6 +3,7 @@
 This project updates your slack profile photo with a photo based on the weather.
 
 
+
 ## Configuration
 You need to provide:
 * Two profile photos with a transparent background, for daytime and nighttime. By default, place them in `profile_photos/jdoe_day.png` and `profile_photos/jdoe_night.png`, for a slack configuration with name "jdoe".
