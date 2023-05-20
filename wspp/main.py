@@ -12,26 +12,9 @@ from pathlib import Path
 from threading import Event
 from typing import Optional
 
-from pydantic import BaseSettings, DirectoryPath, PositiveInt
-
 from wspp import image, schedule, slack, weatherstack
+from wspp.settings import settings
 from wspp.sunrisesunset import SunriseSunset
-
-
-class Settings(BaseSettings):
-    weatherstack: weatherstack.WeatherstackSettings
-    slack: slack.SlackSettings
-    latitude: float
-    longitude: float
-    profile_photos_dir: DirectoryPath = Path(__file__).parent.parent / "profile_photos"
-    polling_interval_s: PositiveInt = 7200
-
-    class Config:
-        env_file = ".env"
-        env_nested_delimiter = "__"
-
-
-settings = Settings()
 
 
 @dataclasses.dataclass
