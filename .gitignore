@@ -2,3 +2,4 @@
 .resources
 .vscode/
 __pycache__
+config.toml
