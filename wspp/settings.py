@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import tomllib
-from pydantic import BaseModel, BaseSettings, DirectoryPath, PositiveInt
+from pydantic import BaseModel, BaseSettings, DirectoryPath, PositiveInt, confloat
 from pydantic.env_settings import EnvSettingsSource
 from pydantic.utils import deep_update
 
@@ -9,8 +9,8 @@ from wspp import slack, weatherstack
 
 
 class WsppSettings(BaseModel):
-    latitude: float
-    longitude: float
+    latitude: confloat(ge=-90.0, le=90.0)
+    longitude: confloat(ge=-180.0, le=180.0)
     profile_photos_dir: DirectoryPath = Path(__file__).parent.parent / "profile_photos"
     polling_interval_s: PositiveInt = 7200
 
