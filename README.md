@@ -5,25 +5,29 @@ This project updates your slack profile photo with a photo based on the weather.
 
 ## Configuration
 You need to provide:
-* Two profile photos with a transparent background, for daytime and nighttime. By default, place them in `profile_photos/photo.png` and `profile_photos/night_photo.png`.
+* Two profile photos with a transparent background, for daytime and nighttime. By default, place them in `profile_photos/jdoe_day.png` and `profile_photos/jdoe_night.png`, for a slack configuration with name "jdoe".
 * Environment variables:
   - Copy the `config.toml.template` file to `config.toml`.
   - Edit the variables:
-    - `weatherstack__api_access_key`: the api key for your account on weatherstack.com.
-    - `slack__workspace`: the slack workspace where you want to change your profile photo
-    - `slack__token`, `slack__cookie_d`: see below.
-    - `latitude`, `longitude`: the location for the weather conditions that will be used to fill in the background in your profile photo.
+    - `[weatherstack]` section:
+      - `api_access_key`: the api key for your account on weatherstack.com.
+    - `[[slack]]` sections:
+      - `name`: a name for your slack configuration.
+      - `workspace`: the slack workspace where you want to change your profile photo
+      - `token`, `cookie_d`: see below.
+    - `[wspp]` section:
+      - `latitude`, `longitude`: the location for the weather conditions that will be used to fill in the background in your profile photo.
 
 ### Retrieving the slack token and cookie values
 * Log into slack in a browser on a computer.
 * Enable developer tools in the browser, and open the network tab.
 * Manually change your profile photo to any photo you want.
 * Inspect the request in the developer tools network tab on the `/api/users.setPhoto` endpoint.
-  - Copy the value of the `token` parameter into `slack__token` in your `config.toml` file.
-  - For the `slack__cookie_d` env var, look at the `cookie` header, and extract the value of the `d=` part of the cookie.
+  - Copy the value of the `token` parameter into `token` in your `config.toml` file.
+  - For the `cookie_d` env var, look at the `cookie` header, and extract the value of the `d=` part of the cookie.
 
 ### Optional parameters
-* `profile_photos_dir`: The directory containing your profile photos with the transparent background. it should contain a `photo.png` for daytime, and a `night_photo.png` for nighttime. the default location is in `profile_photos/` in the project.
+* `profile_photos_dir`: The directory containing your profile photos with the transparent background. it should contain a `jdoe_day.png` for daytime, and a `jdoe_night.png` for nighttime, for a slack configuration with `name` "jdoe". the default location is in `profile_photos/` in the project.
 * `polling_interval_s`: The frequency in seconds to update the profile photo. The default value is `7200`.
 
 ## Running the program
@@ -31,7 +35,7 @@ You need to provide:
 
 ### Locally
 * Setup a python environment
-* Run `python wspp.main.py`
+* Run `python -m wspp.main`
 
 ### With Docker
 
