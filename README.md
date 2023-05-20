@@ -7,24 +7,24 @@ This project updates your slack profile photo with a photo based on the weather.
 You need to provide:
 * Two profile photos with a transparent background, for daytime and nighttime. By default, place them in `profile_photos/photo.png` and `profile_photos/night_photo.png`.
 * Environment variables:
-  - Copy the `.env.template` file to `.env`.
+  - Copy the `config.toml.template` file to `config.toml`.
   - Edit the variables:
-    - `WEATHERSTACK__API_ACCESS_KEY`: the api key for your account on weatherstack.com.
-    - `SLACK__WORKSPACE`: the slack workspace where you want to change your profile photo
-    - `SLACK__TOKEN`, `SLACK__COOKIE_D`: see below.
-    - `LATITUDE`, `LONGITUDE`: the location for the weather conditions that will be used to fill in the background in your profile photo.
+    - `weatherstack__api_access_key`: the api key for your account on weatherstack.com.
+    - `slack__workspace`: the slack workspace where you want to change your profile photo
+    - `slack__token`, `slack__cookie_d`: see below.
+    - `latitude`, `longitude`: the location for the weather conditions that will be used to fill in the background in your profile photo.
 
 ### Retrieving the slack token and cookie values
 * Log into slack in a browser on a computer.
 * Enable developer tools in the browser, and open the network tab.
 * Manually change your profile photo to any photo you want.
 * Inspect the request in the developer tools network tab on the `/api/users.setPhoto` endpoint.
-  - Copy the value of the `token` parameter into `SLACK__TOKEN` in your `.env` file.
-  - For the `SLACK__COOKIE_D` env var, look at the `cookie` header, and extract the value of the `d=` part of the cookie.
+  - Copy the value of the `token` parameter into `slack__token` in your `config.toml` file.
+  - For the `slack__cookie_d` env var, look at the `cookie` header, and extract the value of the `d=` part of the cookie.
 
 ### Optional parameters
-* `PROFILE_PHOTOS_DIR`: the directory containing your profile photos with the transparent background. It should contain a `photo.png` for daytime, and a `night_photo.png` for nighttime. The default location is in `profile_photos/` in the project.
-* `POLLING_INTERVAL_S`: The frequency in seconds to update the profile photo. The default value is `7200`.
+* `profile_photos_dir`: The directory containing your profile photos with the transparent background. it should contain a `photo.png` for daytime, and a `night_photo.png` for nighttime. the default location is in `profile_photos/` in the project.
+* `polling_interval_s`: The frequency in seconds to update the profile photo. The default value is `7200`.
 
 ## Running the program
 * Follow the setup described just above
@@ -40,9 +40,9 @@ Retrieve the docker image:
 docker pull ghcr.io/caarmen/weather-slack-profile-photo:latest
 ```
 
-Run the docker image. Indicate the host paths to your `.env` file and `profile_photos` folder.
+Run the docker image. Indicate the host paths to your `config.toml` file and `profile_photos` folder.
 ```
-docker run --detach -v `pwd`/.env:/app/.env -v `pwd`/profile_photos/:/app/profile_photos/ ghcr.io/caarmen/weather-slack-profile-photo
+docker run --detach -v `pwd`/config.toml:/app/config.toml -v `pwd`/profile_photos/:/app/profile_photos/ ghcr.io/caarmen/weather-slack-profile-photo
 ```
 
 

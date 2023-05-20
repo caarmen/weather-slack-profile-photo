@@ -38,19 +38,19 @@ def update_profile_photo_from_weather():
     """
     try:
         sunrise_sunset = SunriseSunset.create(
-            latitude=settings.latitude, longitude=settings.longitude
+            latitude=settings.wspp.latitude, longitude=settings.wspp.longitude
         )
         weather_code = weatherstack.get_current_weather_code(
             settings=settings.weatherstack,
-            latitude=settings.latitude,
-            longitude=settings.longitude,
+            latitude=settings.wspp.latitude,
+            longitude=settings.wspp.longitude,
             is_day=sunrise_sunset.is_day_now,
         )
         if cache.last_weather_code != weather_code:
             cache.last_weather_code = weather_code
 
             background_image_file = image.get_image_file(prefix=str(weather_code))
-            foreground_image_file = Path(settings.profile_photos_dir) / (
+            foreground_image_file = Path(settings.wspp.profile_photos_dir) / (
                 "photo.png" if sunrise_sunset.is_day_now else "night_photo.png"
             )
             profile_photo = image.create_profile_photo(
@@ -68,7 +68,7 @@ def update_profile_photo_from_weather():
         logging.error("Error updating profile photo", exc_info=True)
 
     schedule.schedule(
-        daytime_interval_s=settings.polling_interval_s,
+        daytime_interval_s=settings.wspp.polling_interval_s,
         sunrise_sunset=sunrise_sunset,
         function=update_profile_photo_from_weather,
     )
