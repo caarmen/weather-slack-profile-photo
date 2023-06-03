@@ -19,6 +19,16 @@ class SunriseSunset:
         try:
             sunrise = sun.sunrise(observer=location.observer)
             sunset = sun.sunset(observer=location.observer)
+            # Looks like the sunrise & sunset we get are always in the same day.
+            # For locations quite west to UTC (ex: Los Angeles), this might
+            # be something like sunrise=6am, sunset=8pm in localtime un the summer,
+            # which in utc would be sunrise=1pm, sunset=3am.
+            # In this case, since the dates are the same for both, we have
+            # sunset coming before sunrise.
+            # Adjust this by adding one day to sunset, so sunset will be after
+            # sunrise. We need sunset to be after sunrise for our "is day" calculation.
+            if sunset < sunrise:
+                sunset = sunset + datetime.timedelta(days=1)
         except ValueError as e:
             # https://github.com/sffjunkie/astral/issues/64
             logging.info(
