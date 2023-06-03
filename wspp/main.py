@@ -49,6 +49,7 @@ def update_profile_photo_from_weather():
         if cache.last_weather_code != weather_code:
             cache.last_weather_code = weather_code
 
+            logging.info(f"Got weather code {weather_code}")
             background_image_file = image.get_image_file(prefix=str(weather_code))
 
             for slack_settings in settings.slack:
