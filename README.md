@@ -5,7 +5,7 @@ This project updates your slack profile photo with a photo based on the weather.
 
 ## Configuration
 You need to provide:
-* Two profile photos with a transparent background, for daytime and nighttime. By default, place them in `profile_photos/jdoe_day.png` and `profile_photos/jdoe_night.png`, for a slack configuration with name "jdoe".
+* Two profile photos, with 500x500 resolution, and with a transparent background, for daytime and nighttime. By default, place them in `profile_photos/jdoe_day.png` and `profile_photos/jdoe_night.png`, for a slack configuration with name "jdoe".
 * Environment variables:
   - Copy the `config.toml.template` file to `config.toml`.
   - Edit the variables:
