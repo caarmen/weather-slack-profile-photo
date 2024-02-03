@@ -9,8 +9,9 @@ You need to provide:
 * Environment variables:
   - Copy the `config.toml.template` file to `config.toml`.
   - Edit the variables:
-    - `[weatherstack]` section:
-      - `api_access_key`: the api key for your account on weatherstack.com.
+    - `[weatherprovider]` section:
+      - `name`: the name of the provider. Valid values are `weatherstack` and `weatherapi`.
+      - `api_access_key`: the api key for your account on [weatherstack.com](https://weatherstack.com/) or [weatherapi.com](https://www.weatherapi.com/).
     - `[[slack]]` sections:
       - `name`: a name for your slack configuration.
       - `workspace`: the slack workspace where you want to change your profile photo
