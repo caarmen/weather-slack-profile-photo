@@ -1,6 +1,6 @@
+import tomllib
 from pathlib import Path
 
-import tomllib
 from pydantic import BaseModel, BaseSettings, DirectoryPath, PositiveInt, confloat
 from pydantic.env_settings import EnvSettingsSource
 from pydantic.utils import deep_update
