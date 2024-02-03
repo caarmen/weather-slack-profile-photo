@@ -1,27 +1,19 @@
 import requests
-from pydantic import BaseModel
-
-
-class WeatherstackSettings(BaseModel):
-    api_access_key: str
 
 
 def get_current_weather_code(
-    settings: WeatherstackSettings,
+    api_access_key: str,
     latitude: float,
     longitude: float,
-    is_day: bool,
 ) -> int:
     """
     :return: The weather_code for the current condition at the location defined
     in the environment variable.
     """
-    if not is_day:
-        return 999
     response = requests.get(
         url="http://api.weatherstack.com/current",
         params={
-            "access_key": settings.api_access_key,
+            "access_key": api_access_key,
             "query": f"{latitude},{longitude}",
         },
     )

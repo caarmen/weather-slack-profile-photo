@@ -12,7 +12,7 @@ from pathlib import Path
 from threading import Event
 from typing import Optional
 
-from wspp import image, schedule, slack, weatherstack
+from wspp import image, schedule, slack, weather
 from wspp.settings import settings
 from wspp.sunrisesunset import SunriseSunset
 
@@ -40,10 +40,8 @@ def update_profile_photo_from_weather():
         sunrise_sunset = SunriseSunset.create(
             latitude=settings.wspp.latitude, longitude=settings.wspp.longitude
         )
-        weather_code = weatherstack.get_current_weather_code(
-            settings=settings.weatherstack,
-            latitude=settings.wspp.latitude,
-            longitude=settings.wspp.longitude,
+        weather_code = weather.get_current_weather_code(
+            settings=settings,
             is_day=sunrise_sunset.is_day_now,
         )
         if cache.last_weather_code != weather_code:

@@ -1,3 +1,4 @@
+import enum
 import tomllib
 from pathlib import Path
 from typing import Any
@@ -11,7 +12,7 @@ from pydantic_settings import (
 )
 from typing_extensions import Annotated
 
-from wspp import slack, weatherstack
+from wspp import slack
 
 
 class WsppSettings(BaseModel):
@@ -19,6 +20,16 @@ class WsppSettings(BaseModel):
     longitude: Annotated[float, Field(ge=-180.0, le=180.0)]
     profile_photos_dir: DirectoryPath = Path(__file__).parent.parent / "profile_photos"
     polling_interval_s: PositiveInt = 7200
+
+
+class ProviderName(enum.Enum):
+    WEATHERSTACK = "weatherstack"
+    WEATHERAPI = "weatherapi"
+
+
+class WeatherproviderSettings(BaseModel):
+    name: ProviderName
+    api_access_key: str
 
 
 # https://github.com/pydantic/pydantic/issues/2335
@@ -34,7 +45,7 @@ class TOMLConfigSettingsSource(PydanticBaseSettingsSource):
 
 class Settings(BaseSettings):
     wspp: WsppSettings
-    weatherstack: weatherstack.WeatherstackSettings
+    weatherprovider: WeatherproviderSettings
     slack: list[slack.SlackSettings]
 
     @classmethod
